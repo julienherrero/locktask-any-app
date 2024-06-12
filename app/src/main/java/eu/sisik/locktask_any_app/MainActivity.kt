@@ -6,12 +6,13 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,17 +37,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (!devicePolicyManager.isDeviceOwnerApp(packageName))
+        updateDeviceOwnerStatus()
+    }
+
+    private fun updateDeviceOwnerStatus() {
+        if (!devicePolicyManager.isDeviceOwnerApp(packageName)) {
             supportActionBar?.title = "Device Owner not activated!"
-        else
+        } else {
             supportActionBar?.title = "Device Owner active ✓"
+        }
     }
 
     private fun initViews() {
-        val tvPN = tvPackageName
+        val tvPackageName = findViewById<TextView>(R.id.tvPackageName)
+        val rvPackageList = findViewById<RecyclerView>(R.id.rvPackageList)
+        val butStartLockTask = findViewById<Button>(R.id.butStartLockTask)
+        val butClearDeviceOwner = findViewById<Button>(R.id.butClearDeviceOwner)
 
         adapter = PackageAdapter(packageList) {
-            tvPN.text = it.packageName
+            tvPackageName.text = it.packageName
         }
 
         rvPackageList.layoutManager = LinearLayoutManager(this)
@@ -60,6 +69,21 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Select a valid package name first", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        butClearDeviceOwner.setOnClickListener {
+            val pn = tvPackageName.text.toString()
+            if (packageNameValid(pn)) {
+                if (devicePolicyManager.isDeviceOwnerApp(pn)) {
+                    devicePolicyManager.clearDeviceOwnerApp(pn)
+                } else {
+                    Toast.makeText(this, "Selected package is not device owner", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            } else {
+                Toast.makeText(this, "Select a valid package name first", Toast.LENGTH_SHORT).show()
+            }
+            updateDeviceOwnerStatus()
         }
     }
 
@@ -89,10 +113,15 @@ class MainActivity : AppCompatActivity() {
     private fun startLockTask(forPackageName: String) {
         // Whitelist package, so that it can start in Lock Task mode
         devicePolicyManager.setLockTaskPackages(adminComponentName, arrayOf(forPackageName))
+        devicePolicyManager.setLockTaskFeatures(
+            adminComponentName,
+            DevicePolicyManager.LOCK_TASK_FEATURE_NONE
+        )
 
         // Start package in Lock Task mode
         val options = ActivityOptions.makeBasic()
         options.setLockTaskEnabled(true)
+
 
         val i = packageManager.getLaunchIntentForPackage(forPackageName)
         startActivity(i, options.toBundle())

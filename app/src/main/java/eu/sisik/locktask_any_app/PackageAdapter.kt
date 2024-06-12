@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.package_item.view.*
 
 /**
  * Copyright (c) 2019 by Roman Sisik. All rights reserved.
  */
 class PackageAdapter(
     private val packageList: List<PackageInfo>,
-    private val onPackageSelected: (packageInfo: PackageInfo) -> Unit):
+    private val onPackageSelected: (packageInfo: PackageInfo) -> Unit
+) :
     RecyclerView.Adapter<PackageAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,7 +35,7 @@ class PackageAdapter(
 
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val tvPackageName = v.findViewById<TextView>(R.id.tvPackageName)
+        val tvPackageName: TextView = v.findViewById(R.id.tvPackageName)
 
         init {
             tvPackageName.setOnClickListener {

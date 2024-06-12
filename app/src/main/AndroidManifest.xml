@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="eu.sisik.locktask_any_app">
 
+    <queries>
+        <package android:name="com.tabesto.kiosk.debug" />
+        <package android:name="com.tabesto.kiosk" />
+        <package android:name="eu.softpos.softposwrapper.wl" />
+        <package android:name="eu.softpos.mobile.pin.wl" />
+        <package android:name="com.dejamobile.cbp.sps.app" />
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,7 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,8 +29,9 @@
 
         <receiver
             android:name=".DevAdminReceiver"
+            android:exported="true"
             android:label="@string/app_name"
-            android:permission="android.permission.BIND_DEVICE_ADMIN" >
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>

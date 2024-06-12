@@ -6,7 +6,7 @@ import android.content.Intent
 import android.util.Log
 
 class DevAdminReceiver: DeviceAdminReceiver() {
-    override fun onEnabled(context: Context?, intent: Intent?) {
+    override fun onEnabled(context: Context, intent: Intent) {
         super.onEnabled(context, intent)
         Log.d(TAG, "Device Owner Enabled")
     }
